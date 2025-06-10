@@ -1,6 +1,5 @@
 package com.example.orm.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,12 +16,22 @@ public class DataWarehouse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "warehouse_id")  // Explicitly map to the correct column name
     private Long warehouseID;
 
+    @Column(name = "warehouse_name")
     private String warehouseName;
+
+    @Column(name = "warehouse_address")
     private String warehouseAddress;
+
+    @Column(name = "warehouse_postal_code")
     private String warehousePostalCode;
+
+    @Column(name = "warehouse_city")
     private String warehouseCity;
+
+    @Column(name = "warehouse_country")
     private String warehouseCountry;
 
     @CreationTimestamp

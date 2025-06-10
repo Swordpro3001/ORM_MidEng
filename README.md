@@ -338,3 +338,135 @@ GET /warehouses
 3. DTOs are used for structured data transfer between the client and the API.
 4. Exception handling is implemented for cases like "warehouse not found."
 5. All timestamps are automatically generated upon entity creation.
+
+
+# EK
+
+## Änderungen
+
+### 1. application.properties:
+   - Hinzufügen von `spring.jpa.hibernate.ddl-auto=update` für automatische Schema-Aktualisierungen.
+   - Konfiguration der Datenbankverbindung.
+   ```
+    spring.datasource.url=jdbc:postgresql://localhost:5432/warehouse
+    spring.datasource.username=postgres
+    spring.datasource.password=example_password
+    spring.datasource.driver-class-name=org.postgresql.Driver
+    spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+   ```
+### 2. build.gradle:
+   - Hinzufügen der Abhängigkeiten für Spring Boot, JPA, Lombok und PostgreSQL.
+   
+```groovy
+dependencies {
+   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+   implementation 'org.springframework.boot:spring-boot-starter-web'
+   implementation 'org.projectlombok:lombok'
+   runtimeOnly 'org.postgresql:postgresql'
+   annotationProcessor 'org.projectlombok:lombok'
+}
+```
+
+### 3. Controller:
+- Implementierung der REST-API-Endpunkte für die Verwaltung von Lagerhäusern und Produkten.
+- Verwendung von DTOs für strukturierte Anfragen und Antworten.
+
+```java
+@RestController
+@RequestMapping("/warehouses")
+public class DataWarehouseController {
+     @Autowired
+     private DataWarehouseService service;
+
+     @GetMapping
+     public List<DataWarehouse> getAllWarehouses() {
+          return service.getAllWarehouses();
+     }
+
+     @PostMapping("/with-products")
+     public DataWarehouse createWarehouseWithProducts(@RequestBody WarehouseWithProductIdsDTO request) {
+          return service.createWarehouseWithExistingProducts(request);
+     }
+
+     // Weitere Endpunkte...
+}
+```
+
+### 4. Service Layer:
+- Implementierung der Geschäftslogik für die Verwaltung von Lagerhäusern und Produkten.
+- Verwendung von Repositories für Datenbankzugriffe.
+
+```java
+@Service
+public class DataWarehouseService {
+    @Autowired
+    private DataWarehouseRepository repository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    public List<DataWarehouse> getAllWarehouses() {
+        return repository.findAll();
+    }
+
+    public DataWarehouse createWarehouseWithExistingProducts(WarehouseWithProductIdsDTO request) {
+        List<Product> products = productRepository.findAllById(request.getProductIds());
+        DataWarehouse warehouse = new DataWarehouse();
+        // Set warehouse properties
+        warehouse.setProducts(products);
+        return repository.save(warehouse);
+    }
+
+    // Weitere Methoden...
+}
+```
+### 5. Repository Layer:
+- Definition der JPA-Repositories für `DataWarehouse` und `Product` Entitäten.
+
+```java
+public interface DataWarehouseRepository extends JpaRepository<DataWarehouse, Long> {
+}
+
+public interface ProductRepository extends JpaRepository<Product, String> {
+    Product findByProductID(String productID);
+}
+```
+### 6. Entitäten:
+- `DataWarehouse` und `Product` Entitäten sind definiert mit JPA Annotations.
+- Die `DataWarehouse` Entität hat eine Many-to-Many Beziehung zu `Product`.
+- `Column` Annotationen werden verwendet, um die Spaltennamen in der Datenbank zu definieren.
+
+```java
+@Entity
+@Data
+@Table(name = "datawarehouse")
+public class DataWarehouse {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long warehouseID;
+
+    private String warehouseName;
+    private String warehouseAddress;
+    private String warehousePostalCode;
+    private String warehouseCity;
+    private String warehouseCountry;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime timestamp;
+
+    @ManyToMany
+    @JoinTable(
+            name = "warehouse_products",
+            joinColumns = @JoinColumn(name = "warehouse_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> products;
+}
+```
+
+### 7. Datenbank:
+- PostgreSQL wird als Datenbank verwendet.
+- Die Tabellen werden automatisch basierend auf den Entitäten erstellt und aktualisiert.
+- Die Datenbankverbindung wird in der `application.properties` konfiguriert.
+

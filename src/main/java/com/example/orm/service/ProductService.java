@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -17,7 +18,8 @@ public class ProductService {
     }
 
     public Product getProductById(String id) {
-        return repository.findByProductID(id);
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
     }
 
     public List<Product> getAllProducts() {
