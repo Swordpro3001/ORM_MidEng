@@ -23,5 +23,16 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return repository.findAll();
     }
+
+    public Product updateProduct(Product product) {
+        return repository.save(product);
+    }
+
+    public void deleteProduct(String id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Product not found");
+        }
+        repository.deleteById(id);
+    }
 }
 
