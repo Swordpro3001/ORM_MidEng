@@ -81,4 +81,9 @@ public class DataWarehouseService {
 
         return repository.save(warehouse);
     }
+
+    public Product getProductFromWarehouse(Long warehouseId, String productId) {
+        return repository.findProductInWarehouse(warehouseId, productId)
+                .orElseThrow(() -> new RuntimeException("Product not found in the specified warehouse"));
+    }
 }

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import com.example.orm.model.Product;
 @RestController
 @RequestMapping("/warehouses")
 @RequiredArgsConstructor
@@ -46,5 +46,11 @@ public class DataWarehouseController {
     @PostMapping("/{warehouseId}/add-products")
     public DataWarehouse addProductsToWarehouse(@PathVariable Long warehouseId, @RequestBody List<String> productIds) {
         return service.addProductsToWarehouse(warehouseId, productIds);
+    }
+
+    // Extended DataWarehouseController.java - Add this endpoint
+    @GetMapping("/{warehouseId}/products/{productId}")
+    public Product getProductFromWarehouse(@PathVariable Long warehouseId, @PathVariable String productId) {
+        return service.getProductFromWarehouse(warehouseId, productId);
     }
 }

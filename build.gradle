@@ -29,7 +29,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+
+    // CHANGE: Replace MySQL with PostgreSQL driver
+    runtimeOnly 'org.postgresql:postgresql'
+    // REMOVE: runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+    // REMOVE: runtimeOnly 'mysql:mysql-connector-java'
+
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
@@ -37,9 +42,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
     implementation 'org.projectlombok:lombok'
-    runtimeOnly 'mysql:mysql-connector-java' // Falls du MySQL benutzt
-
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
